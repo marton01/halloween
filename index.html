@@ -1,6 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ultra Haunted Terminal</title>
+    <style>
+      body {
+        background-color: black;
+        color: #00ff00;
+        font-family: "Courier New", monospace;
+        margin: 0;
+        padding: 20px;
+      }
+      #terminal {
+        white-space: pre-wrap;
+      }
+      #input-line {
+        display: flex;
+        margin-top: 10px;
+        font-size: 28px;
+      }
+      #prompt {
+        margin-right: 5px;
+      }
+      input {
+        background: none;
+        border: none;
+        color: #00ff00;
+        font-family: monospace;
+        outline: none;
+        font-size: 28px;
+        flex: 1;
+      }
+      #scare-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: red;
+        color: white;
+        text-align: center;
+        line-height: 1.2em;
+        z-index: 100;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      #scare-img {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
   <body>
-    asd b
+    <div id="terminal" style="font-size: 28px">
+      <span style="font-size: 35px">
+    Üdvözöllek a Kísértetjárta Konzolban! 🎃
+    (A jobb élményért hangosítsd fel a készüléked)
+    Írd be: 'help' a parancsokért.</span
+      >
+    </div>
+
+    <div id="input-line" style="font-size: 28px">
+      <span id="prompt" style="font-size: 28px">> </span>
+      <input
+        type="text"
+        id="command-input"
+        autofocus
+        autocomplete="off"
+        style="font-size: 28px"
+      />
+    </div>
+
+    <div id="scare-overlay">
+      <img id="scare-img" src="scary_image.jpg" alt="Scary face" />
+    </div>
+
+    <audio id="scream" src="scary_sound.mp3"></audio>
+
+    <script>
+      const terminal = document.getElementById("terminal");
+      const input = document.getElementById("command-input");
+      const overlay = document.getElementById("scare-overlay");
+      const scream = document.getElementById("scream");
+
+      const responses = {
+        help: "Parancsok: scan, trick, treat, halloween",
+        scan: "Jelmez beolvasása... HIBA: Jelmez nem található...",
+        trick: "Trükk kiválasztva! Készülj a meglepetésekre!",
+        halloween: "Köszönöm a meghívást a buliba, boldog halloween-t! 🎃",
+      };
+
+      // Jump scare function
+      function triggerScare() {
+        overlay.style.display = "flex";
+        scream.currentTime = 0;
+        scream.play();
+        setTimeout(() => {
+          overlay.style.display = "none";
+        }, 3000);
+      }
+
+      // function triggerScare() {
+      //   terminal.innerHTML += "\nbooo";
+      // }
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          const cmd = input.value.toLowerCase();
+          terminal.innerHTML += "\n> " + input.value;
+
+          if (["trick"].includes(cmd)) {
+            new Promise((resolve) => setTimeout(resolve, 1000)).then(
+              triggerScare
+            );
+          }
+
+          if (responses[cmd]) {
+            terminal.innerHTML += "\n" + responses[cmd];
+          } else {
+            terminal.innerHTML += "\nCommand not recognized. Try 'help'.";
+          }
+
+          input.value = "";
+          terminal.scrollTop = terminal.scrollHeight;
+        }
+      });
+    </script>
   </body>
 </html>

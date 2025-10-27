@@ -21,11 +21,13 @@
     position: relative; z-index: 1;
   }
   #terminal { white-space: pre-wrap; padding: 20px; font-size: 28px; text-shadow: 0 0 5px rgb(178, 178, 178), 0 0 10px rgb(178, 178, 178); }
-  #input-line { display: flex; margin-top: 10px; font-size: 28px; padding: 0 20px;  text-shadow: 0 0 5px rgb(178, 178, 178), 0 0 10px rgb(178, 178, 178); }
+  #input-line { display: flex; margin-top: 30px; font-size: 28px; padding: 0 20px;  text-shadow: 0 0 5px rgb(178, 178, 178), 0 0 10px rgb(178, 178, 178); }
   #prompt { margin-right: 5px; }
   input { background: none; border: none; color: red; font-family: monospace; outline: none; font-size: 28px; flex: 1; text-shadow: 0 0 5px rgb(178, 178, 178), 0 0 10px rgb(178, 178, 178); }
   #scare-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background:red; color:white; text-align:center; line-height:1.2em; z-index:100; flex-direction:column; justify-content:center; align-items:center; }
+  #chip-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background:red; color:white; text-align:center; line-height:1.2em; z-index:100; flex-direction:column; justify-content:center; align-items:center; }
   #scare-img { width:100vw; height:100vh; }
+  #chip-img { width:100vw; height:100vh; }
   #uploadButton { padding:10px 20px; margin-top:10px; border:2px solid red; border-radius:10px; background:black; color:red;  text-shadow: 0 0 5px rgb(255, 255, 255), 0 0 10px rgb(255, 255, 255); }
   #fileInput { border:2px solid red; border-radius:10px; padding:10px; background:black; color:red; }
   #uploadImageContainer { margin-top:200px; text-align:center; }
@@ -51,6 +53,10 @@
 
 <div id="scare-overlay">
   <img id="scare-img" src="scary_image.jpg" alt="Scary face" />
+</div>
+
+<div id="chip-overlay">
+  <img id="chip-img" src="chip_image.jpg" alt="Chip image" />
 </div>
 
 <div id="uploadImageContainer">
@@ -155,7 +161,8 @@
   // ===== TERMINÁL LOGIKA =====
   const terminal = document.getElementById("terminal");
   const input = document.getElementById("command-input");
-  const overlay = document.getElementById("scare-overlay");
+  const scareOverlay = document.getElementById("scare-overlay");
+  const chipOverlay = document.getElementById("chip-overlay");
   const scream = new Audio("scary_sound.mp3");
   const uploadContainer = document.getElementById("uploadImageContainer");
   const fileInput = document.getElementById("fileInput");
@@ -163,24 +170,32 @@
   uploadContainer.style.display = "none";
 
   const responses = {
-    help:"Parancsok: scan, trick, halloween",
+    help:"Parancsok: \n- scan, \n- trick, \n- halloween, \n- chip (ha szeretnél chippendale szettben látni)",
     scan:"Jelmez beolvasása... HIBA: Márton jelmeze nem található...",
     trick:"Trükk kiválasztva! Készülj a meglepetésekre!",
-    halloween:"Boldog halloween-t! Tölts fel egy képet, hogy legyen egy csodás emlék(ünk)! 🎃"
+    halloween:"Boldog halloween-t! Tölts fel egy képet, hogy legyen egy csodás emlék(ünk)! 🎃",
+    chip: " "
   };
 
   function triggerScare() {
-    overlay.style.display = "flex";
-    scream.currentTime=0;
-    scream.play();
-    setTimeout(()=>{overlay.style.display="none";},3000);
+      scareOverlay.style.display = "flex";
+      scream.currentTime=0;
+      scream.play();
+      setTimeout(()=>{scareOverlay.style.display="none";},3000);
+  }
+
+  function triggerChip(){
+      chipOverlay.style.display = "flex";
+      scream.currentTime=0;
+      setTimeout(()=>{chipOverlay.style.display="none";},6000);
   }
 
   input.addEventListener("keydown", function(e){
     if(e.key==="Enter"){
       const cmd = input.value.toLowerCase();
       terminal.innerHTML += "\n> "+input.value;
-      if(cmd==="trick") new Promise(r=>setTimeout(r,1000)).then(triggerScare);
+      if(cmd==="trick") new Promise(r=>setTimeout(r,1200)).then(triggerScare);
+      if(cmd==="chip") triggerChip();
       if(cmd==="halloween") uploadContainer.style.display="block"; 
       else { uploadContainer.style.display="none"; fileInput.value=""; status.innerText=""; }
       terminal.innerHTML += "\n"+(responses[cmd]||"Command not recognized. Try 'help'.");
